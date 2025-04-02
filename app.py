@@ -26,11 +26,15 @@ nat_gas_price = st.sidebar.number_input("Natural Gas Price (USD/MMBtu)", min_val
 # Predict
 if st.sidebar.button("Predict"):
     if model:
-        # ✅ Convert input to a NumPy array (No DMatrix)
+        # ✅ Convert input to a NumPy array and reshape it
         input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]], dtype=np.float32)
         
-        # ✅ Use normal `.predict()` without `DMatrix`
-        prediction = model.predict(input_data)
+        # ✅ Convert to DMatrix if model expects it
+        try:
+            input_dmatrix = xgb.DMatrix(input_data)
+            prediction = model.predict(input_dmatrix)
+        except:
+            prediction = model.predict(input_data)
 
         st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
     else:
