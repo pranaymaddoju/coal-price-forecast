@@ -1,16 +1,22 @@
+import os
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
 import numpy as np
-
-# Load your trained XGBoost model
 import pickle
 
 st.title("Coal Price Forecasting")
 
-# Load model
-with open("xgboost_model.pkl", "rb") as file:
-    model = pickle.load(file)
+# ✅ Get the correct file path
+model_path = os.path.join(os.path.dirname(__file__), "xgboost_model.pkl")
+
+# ✅ Load the model safely
+try:
+    with open(model_path, "rb") as file:
+        model = pickle.load(file)
+    st.success("✅ Model loaded successfully!")
+except FileNotFoundError:
+    st.error("❌ Model file not found. Make sure 'xgboost_model.pkl' is in your GitHub repository.")
 
 # Input features
 st.sidebar.header("Input Parameters")
@@ -21,6 +27,9 @@ nat_gas_price = st.sidebar.number_input("Natural Gas Price (USD/MMBtu)", min_val
 
 # Predict
 if st.sidebar.button("Predict"):
-    input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]])
-    prediction = model.predict(input_data)
-    st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
+    if 'model' in locals():
+        input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]])
+        prediction = model.predict(input_data)
+        st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
+    else:
+        st.error("❌ Model is not loaded. Check if 'xgboost_model.pkl' exists in your GitHub repo.")
