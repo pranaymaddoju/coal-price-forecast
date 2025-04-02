@@ -8,7 +8,7 @@ import pickle
 st.title("Coal Price Forecasting")
 
 # ✅ Get the correct file path
-model_path = os.path.join(os.path.dirname(__file__), "xgboost_model.pkl")
+model_path = os.path.join(os.path.dirname(__file__), "xgboost_coal_forecasting.pkl")
 
 # ✅ Load the model safely
 try:
@@ -16,7 +16,7 @@ try:
         model = pickle.load(file)
     st.success("✅ Model loaded successfully!")
 except FileNotFoundError:
-    st.error("❌ Model file not found. Make sure 'xgboost_model.pkl' is in your GitHub repository.")
+    st.error("❌ Model file not found. Make sure 'xgboost_coal_forecasting.pkl' is in your GitHub repository.")
 
 # Input features
 st.sidebar.header("Input Parameters")
@@ -32,9 +32,8 @@ if st.sidebar.button("Predict"):
         prediction = model.predict(input_data)
         st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
     else:
-        st.error("❌ Model is not loaded. Check if 'xgboost_model.pkl' exists in your GitHub repo.")
+        st.error("❌ Model is not loaded. Check if 'xgboost_coal_forecasting.pkl' exists in your GitHub repo.")
 
-import os
+# ✅ Debugging: Show the current directory and files
 st.write("Current Directory:", os.getcwd())
 st.write("Files:", os.listdir(os.getcwd()))
-
