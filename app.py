@@ -33,3 +33,8 @@ if st.sidebar.button("Predict"):
         st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
     else:
         st.error("❌ Model is not loaded. Check if 'xgboost_model.pkl' exists in your GitHub repo.")
+
+import os
+st.write("Current Directory:", os.getcwd())
+st.write("Files:", os.listdir(os.getcwd()))
+
