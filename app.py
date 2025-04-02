@@ -2,18 +2,20 @@ import os
 import streamlit as st
 import numpy as np
 import pickle
+import xgboost as xgb
 
 st.title("Coal Price Forecasting")
 
 # ✅ Load the model
-model_path = os.path.join(os.path.dirname(__file__), "xgboost_coal_forecasting.pkl")
+model_filename = "xgboost_coal_forecasting.pkl"  # Ensure this matches your file
+model_path = os.path.join(os.path.dirname(__file__), model_filename)
 
 try:
     with open(model_path, "rb") as file:
         model = pickle.load(file)
     st.success("✅ Model loaded successfully!")
 except FileNotFoundError:
-    st.error("❌ Model file not found. Make sure 'xgboost_coal_forecasting.pkl' is in your GitHub repository.")
+    st.error(f"❌ Model file '{model_filename}' not found. Make sure it is in your GitHub repository.")
     st.stop()
 
 # Input features
@@ -26,16 +28,16 @@ nat_gas_price = st.sidebar.number_input("Natural Gas Price (USD/MMBtu)", min_val
 # Predict
 if st.sidebar.button("Predict"):
     if model:
-        # ✅ Convert input to a NumPy array and reshape it
+        # ✅ Ensure input is a 2D NumPy array
         input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]], dtype=np.float32)
-        
-        # ✅ Convert to DMatrix if model expects it
-        try:
+
+        # ✅ Convert input to match model's training format
+        if isinstance(model, xgb.XGBRegressor):  # Check if the model is an XGBoost regressor
+            prediction = model.predict(input_data)
+        else:
             input_dmatrix = xgb.DMatrix(input_data)
             prediction = model.predict(input_dmatrix)
-        except:
-            prediction = model.predict(input_data)
 
         st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
     else:
-        st.error("❌ Model is not loaded. Check if 'xgboost_coal_forecasting.pkl' exists in your GitHub repo.")
+        st.error("❌ Model is not loaded. Check if the model file exists in your GitHub repo.")
