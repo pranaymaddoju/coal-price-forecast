@@ -10,16 +10,22 @@ with open("xgboost_coal_forecasting.pkl", "rb") as file:
 
 # Sidebar inputs
 st.sidebar.header("Input Parameters")
+
 gdp = st.sidebar.number_input("GDP Growth (%)", min_value=0.0, step=0.1)
 exchange_rate = st.sidebar.number_input("Exchange Rate (USD)", min_value=0.0, step=0.1)
 nat_gas_price = st.sidebar.number_input("Natural Gas Price (USD/MMBtu)", min_value=0.0, step=0.1)
 oil_price = st.sidebar.number_input("Oil Price (USD per barrel)", min_value=0.0, step=0.1)
+coal_production = st.sidebar.number_input("Coal Production (e.g., in tons)", min_value=0.0, step=0.1)
+interest_rate = st.sidebar.number_input("Interest Rate (%)", min_value=0.0, step=0.1)
+inflation_rate = st.sidebar.number_input("Inflation Rate (%)", min_value=0.0, step=0.1)
+unemployment_rate = st.sidebar.number_input("Unemployment Rate (%)", min_value=0.0, step=0.1)
+industrial_production = st.sidebar.number_input("Industrial Production Index", min_value=0.0, step=0.1)
 
 # Prediction
 if st.sidebar.button("Predict"):
-    input_data = np.array([[gdp, exchange_rate, nat_gas_price, oil_price]], dtype=np.float32)
-    
-    # ✅ Directly predict using the model (No need for DMatrix)
+    input_data = np.array([[gdp, exchange_rate, nat_gas_price, oil_price,
+                           coal_production, interest_rate, inflation_rate, unemployment_rate, industrial_production]], dtype=np.float32)
+
     prediction = model.predict(input_data)
 
     st.write(f"### 🔥 Predicted Coal Price: **${prediction[0]:.2f} per ton**")
