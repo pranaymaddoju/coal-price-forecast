@@ -7,16 +7,16 @@ import pickle
 
 st.title("Coal Price Forecasting")
 
-# ✅ Get the correct file path
+# ✅ Load the model
 model_path = os.path.join(os.path.dirname(__file__), "xgboost_coal_forecasting.pkl")
 
-# ✅ Load the model safely
 try:
     with open(model_path, "rb") as file:
         model = pickle.load(file)
     st.success("✅ Model loaded successfully!")
 except FileNotFoundError:
     st.error("❌ Model file not found. Make sure 'xgboost_coal_forecasting.pkl' is in your GitHub repository.")
+    st.stop()
 
 # Input features
 st.sidebar.header("Input Parameters")
@@ -27,13 +27,16 @@ nat_gas_price = st.sidebar.number_input("Natural Gas Price (USD/MMBtu)", min_val
 
 # Predict
 if st.sidebar.button("Predict"):
-    if 'model' in locals():
-        input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]])
-        prediction = model.predict(input_data)
+    if model:
+        # ✅ Convert input to a NumPy array and reshape it correctly
+        input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]], dtype=np.float32)
+        
+        # ✅ Check if the model is an XGBoost regressor
+        if isinstance(model, xgb.XGBRegressor):
+            prediction = model.predict(xgb.DMatrix(input_data))  # Use DMatrix
+        else:
+            prediction = model.predict(input_data)  # Normal NumPy input
+
         st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
     else:
         st.error("❌ Model is not loaded. Check if 'xgboost_coal_forecasting.pkl' exists in your GitHub repo.")
-
-# ✅ Debugging: Show the current directory and files
-st.write("Current Directory:", os.getcwd())
-st.write("Files:", os.listdir(os.getcwd()))
