@@ -1,7 +1,5 @@
 import os
 import streamlit as st
-import pandas as pd
-import xgboost as xgb
 import numpy as np
 import pickle
 
@@ -28,14 +26,11 @@ nat_gas_price = st.sidebar.number_input("Natural Gas Price (USD/MMBtu)", min_val
 # Predict
 if st.sidebar.button("Predict"):
     if model:
-        # ✅ Convert input to a NumPy array and reshape it correctly
+        # ✅ Convert input to a NumPy array (No DMatrix)
         input_data = np.array([[gdp, inflation, exchange_rate, nat_gas_price]], dtype=np.float32)
         
-        # ✅ Check if the model is an XGBoost regressor
-        if isinstance(model, xgb.XGBRegressor):
-            prediction = model.predict(xgb.DMatrix(input_data))  # Use DMatrix
-        else:
-            prediction = model.predict(input_data)  # Normal NumPy input
+        # ✅ Use normal `.predict()` without `DMatrix`
+        prediction = model.predict(input_data)
 
         st.write(f"### Predicted Coal Price: ${prediction[0]:.2f} per ton")
     else:
