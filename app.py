@@ -15,7 +15,7 @@ st.title("Coal Price Forecasting App")
 oil_price_index = st.number_input("Oil Price Index", value=0.0)
 natural_gas_price = st.number_input("Natural Gas Price", value=0.0)
 gdp = st.number_input("GDP", value=0.0)
-exchange_rate = st.number_input("Exchange Rate", value=0.0)
+exchange_rate = st.number_input("Exchange Rate", value=0.0")
 oil_price_lag7 = st.number_input("Oil Price Lag 7", value=0.0)
 gas_price_lag7 = st.number_input("Gas Price Lag 7", value=0.0)
 exchange_rate_lag7 = st.number_input("Exchange Rate Lag 7", value=0.0)
@@ -30,5 +30,10 @@ if st.button("Predict Coal Price"):
         oil_price_rolling14, gas_price_rolling14
     ]])
     
+    st.write("Input Data:", input_data)  # Debugging: Check input data
+    
     prediction = model.predict(input_data)[0]
+    
+    st.write("Raw Prediction:", prediction)  # Debugging: Check raw prediction
+    
     st.success(f"Predicted Coal Price: {prediction:.2f}")
