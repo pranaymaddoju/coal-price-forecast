@@ -1,48 +1,36 @@
 import streamlit as st
+import pickle
 import numpy as np
-import xgboost as xgb
-import pandas as pd
 
-# Set page title
-st.title("🔥 Coal Price Forecasting App")
+# Set Streamlit app title
+st.title("Coal Price Forecasting")
 
 # Load the trained XGBoost model
+MODEL_PATH = "xgboost_coal_forecasting (2).pkl"
+
 try:
-    model = xgb.Booster()
-    model.load_model("xgboost_coal_forecasting.json")
-    st.success("✅ Model loaded successfully!")
-except Exception as e:
-    st.error("❌ Failed to load the model. Make sure 'xgboost_coal_forecasting.json' is in the directory.")
+    with open(MODEL_PATH, "rb") as file:
+        model = pickle.load(file)
+    st.success("✅ Model Loaded Successfully!")
+except FileNotFoundError:
+    st.error(f"❌ Model file '{MODEL_PATH}' not found! Please upload the correct model file.")
     st.stop()
 
 # Sidebar inputs
-st.sidebar.header("📊 Input Parameters")
+st.sidebar.header("Input Features")
+coal_production = st.sidebar.number_input("Coal Production", min_value=0.0, format="%.2f")
+oil_price = st.sidebar.number_input("Oil Price", min_value=0.0, format="%.2f")
+interest_rate = st.sidebar.number_input("Interest Rate", min_value=0.0, format="%.2f")
+unemployment_rate = st.sidebar.number_input("Unemployment Rate", min_value=0.0, format="%.2f")
+industrial_production = st.sidebar.number_input("Industrial Production", min_value=0.0, format="%.2f")
 
-coal_production = st.sidebar.number_input("Coal Production (tons)", min_value=0.0, value=1000.0)
-oil_price = st.sidebar.number_input("Oil Price (USD per barrel)", min_value=0.0, value=70.0)
-interest_rate = st.sidebar.number_input("Interest Rate (%)", min_value=0.0, value=5.0)
-exchange_rate = st.sidebar.number_input("Exchange Rate (USD to INR)", min_value=50.0, value=75.0)
-inflation_rate = st.sidebar.number_input("Inflation Rate (%)", min_value=0.0, value=3.0)
-industrial_production = st.sidebar.number_input("Industrial Production Index", min_value=50.0, value=100.0)
-
-# Create input data as a DataFrame
-input_data = pd.DataFrame({
-    "coal_production": [coal_production],
-    "oil_price": [oil_price],
-    "interest_rate": [interest_rate],
-    "exchange_rate": [exchange_rate],
-    "inflation_rate": [inflation_rate],
-    "industrial_production": [industrial_production],
-})
-
-st.write("### 📋 Model Input Data")
-st.dataframe(input_data)
-
-# Make a prediction
-if st.button("📈 Predict Coal Price"):
+# Predict button
+if st.sidebar.button("Predict Coal Price"):
+    input_data = np.array([[coal_production, oil_price, interest_rate, unemployment_rate, industrial_production]], dtype=np.float32)
+    st.write("### 🔍 Input Data:", input_data)  # Debugging
+    
     try:
-        dmatrix = xgb.DMatrix(input_data)  # Convert input data to DMatrix format
-        prediction = model.predict(dmatrix)[0]
-        st.success(f"🔥 Predicted Coal Price: **${prediction:.2f} per ton**")
+        prediction = model.predict(input_data)
+        st.write(f"### 🔥 Predicted Coal Price: **${prediction[0]:.2f} per ton**")
     except Exception as e:
-        st.error("❌ Prediction failed! Check the input values and model integrity.")
+        st.error(f"⚠️ Prediction error: {e}")
