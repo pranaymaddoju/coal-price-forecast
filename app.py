@@ -1,12 +1,18 @@
 import streamlit as st
 import numpy as np
 import pickle
+import os
 
 st.title("Coal Price Forecasting")
 
 # Load the trained XGBoost model
-with open("xgboost_coal_forecasting (2).pkl", "rb") as file:
-    model = pickle.load(file)
+model_path = "xgboost_coal_forecasting (2).pkl"
+if os.path.exists(model_path):
+    with open(model_path, "rb") as file:
+        model = pickle.load(file)
+else:
+    st.error("❌ Model file not found! Please upload the trained model.")
+    st.stop()
 
 # Sidebar inputs
 st.sidebar.header("Input Parameters")
@@ -25,6 +31,11 @@ if st.sidebar.button("Predict"):
     input_data = np.array([[gdp, inflation_rate, exchange_rate, nat_gas_price,
                            coal_production, oil_price, interest_rate, unemployment_rate,
                            industrial_production]], dtype=np.float32)
-    st.write("Input Data:", input_data)  # Debugging
-    prediction = model.predict(input_data)
-    st.write(f"### 🔥 Predicted Coal Price: **${prediction[0]:.2f} per ton**")
+    
+    st.write("### 🔍 Input Data:", input_data)
+    
+    try:
+        prediction = model.predict(input_data)
+        st.write(f"### 🔥 Predicted Coal Price: **${prediction[0]:.2f} per ton**")
+    except Exception as e:
+        st.error(f"⚠️ Prediction failed: {e}")
