@@ -12,15 +12,15 @@ with open(MODEL_PATH, "rb") as model_file:
 st.title("Coal Price Forecasting App")
 
 # ✅ User Input for External Factors
-oil_price_index = st.number_input("Oil Price Index", value=50.0)
-natural_gas_price = st.number_input("Natural Gas Price", value=3.5)
-gdp = st.number_input("GDP", value=20000.0)
-exchange_rate = st.number_input("Exchange Rate", value=1.2)
-oil_price_lag7 = st.number_input("Oil Price Lag 7", value=50.0)
-gas_price_lag7 = st.number_input("Gas Price Lag 7", value=3.5)
-exchange_rate_lag7 = st.number_input("Exchange Rate Lag 7", value=1.2)
-oil_price_rolling14 = st.number_input("Oil Price Rolling 14", value=50.0)
-gas_price_rolling14 = st.number_input("Gas Price Rolling 14", value=3.5)
+oil_price_index = st.number_input("Oil Price Index", value=0.0)
+natural_gas_price = st.number_input("Natural Gas Price", value=0.0)
+gdp = st.number_input("GDP", value=0.0)
+exchange_rate = st.number_input("Exchange Rate", value=0.0)
+oil_price_lag7 = st.number_input("Oil Price Lag 7", value=0.0)
+gas_price_lag7 = st.number_input("Gas Price Lag 7", value=0.0)
+exchange_rate_lag7 = st.number_input("Exchange Rate Lag 7", value=0.0)
+oil_price_rolling14 = st.number_input("Oil Price Rolling 14", value=0.0)
+gas_price_rolling14 = st.number_input("Gas Price Rolling 14", value=0.0)
 
 # ✅ Make Prediction
 if st.button("Predict Coal Price"):
@@ -29,5 +29,6 @@ if st.button("Predict Coal Price"):
         oil_price_lag7, gas_price_lag7, exchange_rate_lag7,
         oil_price_rolling14, gas_price_rolling14
     ]])
+    
     prediction = model.predict(input_data)[0]
     st.success(f"Predicted Coal Price: {prediction:.2f}")
