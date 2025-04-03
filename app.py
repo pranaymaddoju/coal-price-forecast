@@ -5,7 +5,7 @@ import pickle
 st.title("Coal Price Forecasting")
 
 # Load the trained XGBoost model
-with open("xgboost_coal_forecasting.pkl", "rb") as file:
+with open("xgboost_coal_forecasting (2).pkl", "rb") as file:
     model = pickle.load(file)
 
 # Sidebar inputs
