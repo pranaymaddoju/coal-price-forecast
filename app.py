@@ -12,14 +12,22 @@ with open(MODEL_PATH, "rb") as model_file:
 st.title("Coal Price Forecasting App")
 
 # ✅ User Input for External Factors
-oil_price = st.number_input("Oil Price Index", value=50.0)
+oil_price_index = st.number_input("Oil Price Index", value=50.0)
 natural_gas_price = st.number_input("Natural Gas Price", value=3.5)
 gdp = st.number_input("GDP", value=20000.0)
 exchange_rate = st.number_input("Exchange Rate", value=1.2)
+oil_price_lag7 = st.number_input("Oil Price Lag 7", value=50.0)
+gas_price_lag7 = st.number_input("Gas Price Lag 7", value=3.5)
+exchange_rate_lag7 = st.number_input("Exchange Rate Lag 7", value=1.2)
+oil_price_rolling14 = st.number_input("Oil Price Rolling 14", value=50.0)
+gas_price_rolling14 = st.number_input("Gas Price Rolling 14", value=3.5)
 
 # ✅ Make Prediction
 if st.button("Predict Coal Price"):
-    input_data = pd.DataFrame([[oil_price, natural_gas_price, gdp, exchange_rate]],
-                              columns=["Oil_Price_Index", "Natural_Gas_Price", "GDP", "Exchange_Rate"])
+    input_data = np.array([[
+        oil_price_index, natural_gas_price, gdp, exchange_rate,
+        oil_price_lag7, gas_price_lag7, exchange_rate_lag7,
+        oil_price_rolling14, gas_price_rolling14
+    ]])
     prediction = model.predict(input_data)[0]
     st.success(f"Predicted Coal Price: {prediction:.2f}")
