@@ -19,6 +19,7 @@ exchange_rate = st.number_input("Exchange Rate", value=1.2)
 
 # ✅ Make Prediction
 if st.button("Predict Coal Price"):
-    input_data = np.array([[oil_price, natural_gas_price, gdp, exchange_rate]])
+    input_data = pd.DataFrame([[oil_price, natural_gas_price, gdp, exchange_rate]],
+                              columns=["Oil_Price_Index", "Natural_Gas_Price", "GDP", "Exchange_Rate"])
     prediction = model.predict(input_data)[0]
     st.success(f"Predicted Coal Price: {prediction:.2f}")
